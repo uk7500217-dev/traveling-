@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Let’s Travel 🤍</title>
+
+    <!-- Google Font -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Poppins:wght@300;400;500&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-dark: #0f0f14;
+            --soft-pink: #ffb3c6;
+            --deep-red: #ff4d6d;
+            --white: #ffffff;
+            --muted: rgba(255, 255, 255, 0.7);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: radial-gradient(circle at top, #1a1a2e, var(--bg-dark));
+            color: var(--white);
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        /* -------- SCENES -------- */
+        .scene {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 1s ease;
+        }
+
+        .scene.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        /* -------- ENTRY SCENE -------- */
+        .entry {
+            flex-direction: column;
+            text-align: center;
+            gap: 30px;
+            padding: 20px;
+        }
+
+        .entry h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2rem, 5vw, 3.2rem);
+            letter-spacing: 1px;
+        }
+
+        .entry p {
+            max-width: 500px;
+            color: var(--muted);
+            font-size: 1rem;
+        }
+
+        .enter-btn {
+            padding: 14px 34px;
+            border-radius: 40px;
+            border: none;
+            background: linear-gradient(135deg, var(--deep-red), var(--soft-pink));
+            color: white;
+            font-size: 1rem;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(255, 77, 109, 0.35);
+            transition: transform .3s ease, box-shadow .3s ease;
+        }
+
+        .enter-btn:hover {
+            transform: translateY(-3px) scale(1.03);
+            box-shadow: 0 20px 45px rgba(255, 77, 109, 0.55);
+        }
+
+        /* -------- TRAVEL SCENE -------- */
+        .travel {
+            flex-direction: column;
+            padding: 20px;
+        }
+
+        .map-wrapper {
+            width: min(90vw, 600px);
+            aspect-ratio: 1 / 1;
+            background: linear-gradient(180deg, #1f2238, #141625);
+            border-radius: 24px;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .map-title {
+            margin-bottom: 18px;
+            font-family: 'Playfair Display', serif;
+            font-size: 1.4rem;
+            opacity: .9;
+        }
+
+        /* Route line */
+        .route {
+            position: absolute;
+            width: 70%;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--soft-pink), var(--deep-red));
+            top: 50%;
+            left: 15%;
+            border-radius: 10px;
+        }
+
+        .timer {
+            position: absolute;
+            top: 14px;
+            right: 18px;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            color: rgba(255, 255, 255, 0.85);
+            background: rgba(255, 255, 255, 0.08);
+            padding: 6px 12px;
+            border-radius: 14px;
+            backdrop-filter: blur(6px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* Car */
+        .car {
+            position: absolute;
+            top: calc(50% - 14px);
+            left: 15%;
+            font-size: 26px;
+        }
+
+
+        .travel.active .car {
+            left: 85%;
+        }
+
+        /* Dua bubble */
+        .dua {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(6px);
+            padding: 10px 18px;
+            border-radius: 20px;
+            font-size: .9rem;
+            opacity: 0;
+            transition: opacity 1s ease;
+        }
+
+        .dua.show {
+            opacity: 1;
+        }
+
+        /* Arrival text */
+        .arrival {
+            margin-top: 20px;
+            font-family: 'Playfair Display', serif;
+            font-size: 1.3rem;
+            opacity: 0;
+            transition: opacity 1s ease;
+        }
+
+        .arrival.show {
+            opacity: 1;
+        }
+    </style>
+</head>
+
+<body>
+
+    <body>
+
+        <section class="scene entry active" id="scene-entry">
+            <h1>Let’s Travel 🤍</h1>
+            <p>A journey watched from afar, carried with prayers, and held gently by love.</p>
+            <button class="enter-btn" id="startTravel">Enter the journey</button>
+        </section>
+
+        <section class="scene travel" id="scene-travel">
+            <div class="map-title">Peshawar → Charsadda</div>
+            <div class="map-wrapper">
+                <div class="timer" id="travelTimer">02:00</div>
+                <div class="route"></div>
+                <div class="car">🚗</div>
+                <div class="dua" id="duaText">May Allah keep you safe 🤍</div>
+            </div>
+            <div class="arrival" id="arrivalText">
+                You’ve arrived safely.<br>
+                My prayers were accepted.
+            </div>
+        </section>
+
+        <section class="scene entry" id="scene-miss-her">
+            <div class="entry">
+                <p style="font-style: italic;">"He sat there, miles away, watching the clock and whispering your name
+                    to the heavens..."</p>
+                <button class="enter-btn" id="btnShowLover">The one who was missing you</button>
+            </div>
+        </section>
+
+        <section class="scene entry" id="scene-final">
+            <div class="entry">
+                <h1 style="font-size: 1.8rem; line-height: 1.6;">How far can one go for a lover?</h1>
+                <p id="typing-text"></p>
+                <button class="enter-btn" onclick="location.reload()"
+                    style="margin-top:20px; font-size: 0.8rem; opacity: 0.6;">Restart Journey</button>
+            </div>
+        </section>
+        <audio id="bg-music" loop>
+            <source src="golden_brown.mp3" type="audio/mpeg">
+        </audio>
+
+        <script>
+            const enterBtn = document.getElementById('enterBtn');
+            const confirmBtn = document.getElementById('confirmBtn');
+            const audio = document.getElementById('bg-music');
+
+            // Music overlay
+            window.addEventListener('load', () => {
+                const overlay = document.createElement('div');
+                overlay.innerHTML = '🎵 Tap anywhere to start music';
+                overlay.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100vw;
+                height: 100vh;
+                background: rgba(0,0,0,0.6);
+                color: white;
+                font-size: 24px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                cursor: pointer;
+                z-index: 9999;
+            `;
+                document.body.appendChild(overlay);
+
+                overlay.addEventListener('click', () => {
+                    audio.play().then(() => overlay.remove()).catch(err => console.log('Music error:', err));
+                });
+            });
+
+
+            const entryScene = document.getElementById("scene-entry");
+            const travelScene = document.getElementById("scene-travel");
+            const missHerScene = document.getElementById("scene-miss-her");
+            const finalScene = document.getElementById("scene-final");
+
+            const startBtn = document.getElementById("startTravel");
+            const btnShowLover = document.getElementById("btnShowLover");
+
+            const dua = document.getElementById("duaText");
+            const arrival = document.getElementById("arrivalText");
+            const car = document.querySelector(".car");
+            const timerDisplay = document.getElementById("travelTimer");
+
+            const duas = [
+                "May Allah protect you on every step 🤍",
+                "May angels walk beside you on this journey ✨",
+                "May your heart stay at peace wherever you go 🤲",
+                "May you reach safely, wrapped in my prayers ❤️"
+            ];
+
+            // START JOURNEY
+            startBtn.addEventListener("click", () => {
+                entryScene.classList.remove("active");
+                setTimeout(() => {
+                    travelScene.classList.add("active");
+                    startJourney();
+                }, 1000);
+            });
+
+            function startJourney() {
+                const start = 15;
+                const end = 85;
+                const duration = 20000; // REDUCED TO 20s FOR TESTING (Change back to 120000 for 2 mins)
+                const startTime = performance.now();
+                let duaIndex = 0;
+
+                function animate(time) {
+                    const elapsed = time - startTime;
+                    const progress = Math.min(elapsed / duration, 1);
+
+                    // Update Car Position
+                    const position = start + (end - start) * progress;
+                    car.style.left = position + "%";
+
+                    // Update Timer Display
+                    const remaining = Math.max(0, duration - elapsed);
+                    const seconds = Math.floor((remaining / 1000) % 60);
+                    const minutes = Math.floor(remaining / 60000);
+                    timerDisplay.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+
+                    if (progress < 1) {
+                        requestAnimationFrame(animate);
+                    }
+                }
+                requestAnimationFrame(animate);
+
+                // Show Duas
+                const duaIntervalTime = duration / duas.length;
+                const duaInterval = setInterval(() => {
+                    if (duaIndex < duas.length) {
+                        showDua(duas[duaIndex]);
+                        duaIndex++;
+                    } else {
+                        clearInterval(duaInterval);
+                    }
+                }, duaIntervalTime);
+
+                // Arrival and Transition to Scene 3
+                setTimeout(() => {
+                    arrival.classList.add("show");
+
+                    // Wait 4 seconds then fade to "Missing Her" scene
+                    setTimeout(() => {
+                        travelScene.classList.remove("active");
+                        setTimeout(() => {
+                            missHerScene.classList.add("active");
+                        }, 1000);
+                    }, 4000);
+                }, duration);
+            }
+
+            function showDua(text) {
+                dua.textContent = text;
+                dua.classList.add("show");
+                setTimeout(() => { dua.classList.remove("show"); }, 4000);
+            }
+
+            // SHOW FINAL POETIC SCENE
+            btnShowLover.addEventListener("click", () => {
+                missHerScene.classList.remove("active");
+                setTimeout(() => {
+                    finalScene.classList.add("active");
+                    typeWriter();
+                }, 1000);
+            });
+
+            function typeWriter() {
+                const text = "Even if miles stretch endlessly between us, know that my thoughts follow you with every step. There is no distance too great, no road too long, to show you how deeply I care. Across every sunrise and sunset, my heart finds its way to yours.";
+                let i = 0;
+                const speed = 50;
+                function type() {
+                    if (i < text.length) {
+                        document.getElementById("typing-text").innerHTML += text.charAt(i);
+                        i++;
+                        setTimeout(type, speed);
+                    }
+                }
+                type();
+            }
+        </script>
+    </body>
+
+
+</body>
+
+</html>
